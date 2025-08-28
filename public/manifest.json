@@ -1,1 +1,20 @@
-
+{
+  "name": "KPI-izvještaji",
+  "short_name": "KPI",
+  "description": "KPI Izvještaji — unos aktivnosti, izvještaji i exporti.",
+  "start_url": "https://mini-kpi-4uvsuijjl-trkulja-igors-projects.vercel.app",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#0b5ed7",
+  "background_color": "#111827",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Unos aktivnosti", "short_name": "Unos", "url": "/unos" },
+    { "name": "Pregled", "short_name": "Pregled", "url": "/pregled" },
+    { "name": "Periodični izvještaj", "short_name": "Period", "url": "/period" }
+  ],
+  "categories": ["productivity", "business"]
+}

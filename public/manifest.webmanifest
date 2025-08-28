@@ -2,7 +2,7 @@
   "name": "KPI-izvještaji",
   "short_name": "KPI",
   "description": "KPI Izvještaji — unos aktivnosti, izvještaji i exporti.",
-  "start_url": "https://mini-kpi-4uvsuijjl-trkulja-igors-projects.vercel.app",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "theme_color": "#0b5ed7",

@@ -1,0 +1,16 @@
+﻿# Node / Next.js
+node_modules/
+.next/
+out/
+.vercel/
+*.log
+.DS_Store
+
+# env
+.env*
+!.env.example
+
+# next-pwa generisani fajlovi (ne commit-aj)
+public/sw.js
+public/workbox-*.js
+public/worker-*.js

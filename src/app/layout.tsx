@@ -1,0 +1,44 @@
+import type { ReactNode } from 'react';
+import Link from 'next/link';
+import type { Metadata } from 'next';
+import ThemeColor from './theme-color';
+import InstallPrompt from './install-prompt';
+
+// ⬅️ OVO MORA POSTOJATI:
+import './globals.css';
+
+export const metadata: Metadata = {
+  title: { default: 'Mini KPI', template: '%s · Mini KPI' },
+  description: 'Mini KPI PWA — unos aktivnosti, izvještaji i exporti.',
+  manifest: '/manifest.webmanifest',
+  icons: {
+    icon: [
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: '/icons/icon-192.png',
+  },
+  appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Mini KPI' },
+};
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="bs">
+      <body className="bg-neutral-950 text-neutral-100">
+        <ThemeColor light="#0b5ed7" dark="#0b5ed7" />
+
+      <header className="sticky top-0 z-10 border-b border-neutral-800 bg-neutral-950/80 backdrop-blur">
+  <nav className="mx-auto max-w-3xl flex gap-4 p-3 text-sm items-center">
+    <Link href="/">Početna</Link>
+    <Link href="/unos">Unos</Link>
+    <Link href="/pregled">Pregled</Link>
+    <Link href="/izvjestaj">Izvještaj</Link>
+    <Link href="/period">Periodični</Link>
+    <div className="ml-auto"><InstallPrompt /></div>
+  </nav>
+</header>
+        <main className="mx-auto max-w-3xl p-4">{children}</main>
+      </body>
+    </html>
+  );
+}

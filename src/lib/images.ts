@@ -77,3 +77,61 @@ export async function compressImage(
     return asBlob(input);
   }
 }
+
+// --- Shared helpers ---
+
+/** Data URL -> ArrayBuffer + ekstenzija */
+export function base64ToArrayBuffer(
+  dataUrl: string,
+): { buf: ArrayBuffer; ext: 'png' | 'jpeg' } {
+  const [head, b64] = dataUrl.split(',');
+  const isPng = head?.includes('image/png');
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return { buf: bytes.buffer, ext: isPng ? 'png' : 'jpeg' };
+}
+
+/** Pokušaj pogoditi ekstenziju po nazivu fajla ili MIME tipu */
+export function guessExtByNameOrMime(
+  fileName?: string,
+  mime?: string,
+): 'png' | 'jpeg' {
+  const n = (fileName || '').toLowerCase();
+  if (n.endsWith('.png') || mime === 'image/png') return 'png';
+  return 'jpeg';
+}
+
+/**
+ * Robustno dohvaćanje binara slike iz raznih izvora.
+ * Podržano: data URL, base64 string, Blob/File, blob: URL, običan URL.
+ */
+export async function getImageBuffer(
+  p: any,
+): Promise<{ buf: ArrayBuffer; ext: 'png' | 'jpeg' } | null> {
+  try {
+    if (p?.data && typeof p.data === 'string' && p.data.startsWith('data:image/')) {
+      return base64ToArrayBuffer(p.data);
+    }
+    if (p?.base64 && typeof p.base64 === 'string') {
+      const url = p.base64.startsWith('data:')
+        ? p.base64
+        : `data:image/jpeg;base64,${p.base64}`;
+      return base64ToArrayBuffer(url);
+    }
+    if (p?.blob instanceof Blob) {
+      const arr = await p.blob.arrayBuffer();
+      return { buf: arr, ext: guessExtByNameOrMime(p.fileName, p.blob.type) };
+    }
+    const src: string | undefined = p?.blobUrl || p?.url;
+    if (src) {
+      const resp = await fetch(src);
+      const blob = await resp.blob();
+      const arr = await blob.arrayBuffer();
+      return { buf: arr, ext: guessExtByNameOrMime(p.fileName, blob.type) };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}

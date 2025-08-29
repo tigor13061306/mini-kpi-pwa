@@ -1,6 +1,7 @@
 // lib/excel.ts
 import ExcelJS from 'exceljs';
 import type { ActivityItem } from './types';
+import { getImageBuffer } from './images';
 
 type ExportMode =
   | { kind: 'day'; day: string }
@@ -11,47 +12,6 @@ const COLS = [
   'Sljedeći korak','CRM ažuriran','Konkurencija','Napomena','Fotografije'
 ] as const;
 
-// --- Helpers ---
-function base64ToArrayBuffer(dataUrl: string): { buf: ArrayBuffer; ext: 'png'|'jpeg' } {
-  const [head, b64] = dataUrl.split(',');
-  if (!b64) throw new Error('Bad data URL');
-  const isPng = head?.includes('image/png');
-  const bin = atob(b64);
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return { buf: bytes.buffer, ext: isPng ? 'png' : 'jpeg' };
-}
-
-function guessExtByNameOrMime(fileName?: string, mime?: string): 'png'|'jpeg' {
-  const n = (fileName || '').toLowerCase();
-  if (n.endsWith('.png') || mime === 'image/png') return 'png';
-  return 'jpeg';
-}
-
-// POKRIVA: p.data (base64), p.blob (Blob), p.blobUrl (blob:), p.url (legacy)
-async function getImageBuffer(p: any): Promise<{ buf: ArrayBuffer; ext: 'png'|'jpeg' } | null> {
-  try {
-    if (p?.data && typeof p.data === 'string' && p.data.startsWith('data:image/')) {
-      return base64ToArrayBuffer(p.data);
-    }
-    if (p?.blob instanceof Blob) {
-      const arr = await p.blob.arrayBuffer();
-      const ext = guessExtByNameOrMime(p.fileName, p.blob.type);
-      return { buf: arr, ext };
-    }
-    const src: string | undefined = p?.blobUrl || p?.url;
-    if (src && typeof src === 'string') {
-      const resp = await fetch(src);
-      const blob = await resp.blob();
-      const arr = await blob.arrayBuffer();
-      const ext = guessExtByNameOrMime(p.fileName, blob.type);
-      return { buf: arr, ext };
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
 
 export async function exportActivitiesToExcel(rows: ActivityItem[], mode: ExportMode) {
   const wb = new ExcelJS.Workbook();
@@ -100,44 +60,6 @@ export async function exportActivitiesToExcel(rows: ActivityItem[], mode: Export
   if (maxPhotos > 0) {
     const totalPx = PAD_X + maxPhotos * IMG_W + (maxPhotos - 1) * GAP_X + PAD_X; // lijevi+desni pad + sve slike + razmaci
     ws.getColumn(COLS.length).width = pixelsToColWidth(totalPx);
-  }
-
-  // ---- Helpers za dohvat binara slike (robustan) ----
-  function base64ToArrayBuffer(dataUrl: string): { buf: ArrayBuffer; ext: 'png'|'jpeg' } {
-    const [head, b64] = dataUrl.split(',');
-    const isPng = head?.includes('image/png');
-    const bin = atob(b64);
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return { buf: bytes.buffer, ext: isPng ? 'png' : 'jpeg' };
-  }
-  function guessExtByNameOrMime(fileName?: string, mime?: string): 'png'|'jpeg' {
-    const n = (fileName || '').toLowerCase();
-    if (n.endsWith('.png') || mime === 'image/png') return 'png';
-    return 'jpeg';
-  }
-  async function getImageBuffer(p: any): Promise<{ buf: ArrayBuffer; ext: 'png'|'jpeg' } | null> {
-    try {
-      if (p?.data && typeof p.data === 'string' && p.data.startsWith('data:image/')) return base64ToArrayBuffer(p.data);
-      if (p?.base64 && typeof p.base64 === 'string') {
-        const url = p.base64.startsWith('data:') ? p.base64 : `data:image/jpeg;base64,${p.base64}`;
-        return base64ToArrayBuffer(url);
-      }
-      if (p?.blob instanceof Blob) {
-        const arr = await p.blob.arrayBuffer();
-        return { buf: arr, ext: guessExtByNameOrMime(p.fileName, p.blob.type) };
-      }
-      const src: string | undefined = p?.blobUrl || p?.url;
-      if (src) {
-        const resp = await fetch(src);
-        const blob = await resp.blob();
-        const arr = await blob.arrayBuffer();
-        return { buf: arr, ext: guessExtByNameOrMime(p.fileName, blob.type) };
-      }
-      return null;
-    } catch {
-      return null;
-    }
   }
 
   // ---- Redovi + slike (u jednoj "vizuelnoj liniji" unutar ćelije) ----

@@ -31,3 +31,24 @@ export interface ActivityItem {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export type AnyPhoto = {
+  id: string;
+  url?: string;
+  blob?: Blob;
+  type?: string;
+  data?: ArrayBufferLike | Uint8Array;
+  base64?: string;
+};
+
+export type EditableDraft = {
+  id: string;
+  datum: string;
+  kupac: string;
+  vrstaKontakta?: string;
+  tema?: string;
+  napomena?: string;
+  crmAzuriran?: boolean;
+  fotografije?: AnyPhoto[];
+  other?: Record<string, any>;
+};

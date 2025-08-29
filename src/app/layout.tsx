@@ -24,20 +24,24 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="bs">
+      <head>
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="theme-color" content="#0b5ed7" />
+      </head>
       <body className="bg-neutral-950 text-neutral-100">
-        <ThemeColor light="#0b5ed7" dark="#0b5ed7" />
-
-      <header className="sticky top-0 z-10 border-b border-neutral-800 bg-neutral-950/80 backdrop-blur">
-  <nav className="mx-auto max-w-3xl flex gap-4 p-3 text-sm items-center">
-    <Link href="/">Početna</Link>
-    <Link href="/unos">Unos</Link>
-    <Link href="/pregled">Pregled</Link>
-    <Link href="/izvjestaj">Izvještaj</Link>
-    <Link href="/period">Periodični</Link>
-    <div className="ml-auto"><InstallPrompt /></div>
-  </nav>
-</header>
+        <header className="sticky top-0 z-10 border-b border-neutral-800 bg-neutral-950/80 backdrop-blur">
+          <nav className="mx-auto max-w-3xl flex gap-4 p-3 text-sm items-center">
+            <Link href="/">Početna</Link>
+            <Link href="/unos">Unos</Link>
+            <Link href="/pregled">Pregled</Link>
+            <Link href="/izvjestaj">Izvještaj</Link>
+            <Link href="/period">Periodični</Link>
+            <div className="ml-auto"><InstallPrompt /></div>
+          </nav>
+        </header>
         <main className="mx-auto max-w-3xl p-4">{children}</main>
+
+        <SWRegister /> {/* ⬅️ ručna registracija SW */}
       </body>
     </html>
   );

@@ -6,8 +6,6 @@ import InstallPrompt from './install-prompt';
 import SWRegister from './sw-register';
 import Script from 'next/script';
 
-
-
 // ⬅️ OVO MORA POSTOJATI:
 import './globals.css';
 
@@ -22,7 +20,11 @@ export const metadata: Metadata = {
     ],
     apple: '/icons/icon-192.png',
   },
-  appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Mini KPI' },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Mini KPI',
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -40,14 +42,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Link href="/pregled">Pregled</Link>
             <Link href="/izvjestaj">Izvještaj</Link>
             <Link href="/period">Periodični</Link>
-            <div className="ml-auto"><InstallPrompt /></div>
+            <div className="ml-auto">
+              <InstallPrompt />
+            </div>
           </nav>
         </header>
         <main className="mx-auto max-w-3xl p-4">{children}</main>
-
         <SWRegister /> {/* ⬅️ ručna registracija SW */}
         <Script id="sw-register" strategy="afterInteractive">
-{`
+          {`
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.getRegistration().then((reg) => {
@@ -63,8 +66,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     });
   }
 `}
-</Script>
-
+        </Script>
       </body>
     </html>
   );

@@ -31,18 +31,23 @@ function toArrayBuffer(data: ArrayBufferLike | Uint8Array): ArrayBuffer {
 const todayISO = toISODateOnly(new Date());
 
 const KNOWN_KEYS = new Set([
-  'id', 'datum', 'kupac',
-  'vrstaKontakta', 'tema', 'napomena', 'crmAzuriran',
+  'id',
+  'datum',
+  'kupac',
+  'vrstaKontakta',
+  'tema',
+  'napomena',
+  'crmAzuriran',
   'fotografije',
 ]);
 
 type AnyPhoto = {
   id: string;
-  url?: string;           // data: URL ili blob:
-  blob?: Blob;            // binarno
+  url?: string; // data: URL ili blob:
+  blob?: Blob; // binarno
   type?: string;
   data?: ArrayBufferLike | Uint8Array; // legacy bytes
-  base64?: string;        // "data:image/...;base64,..." ili samo čisti base64
+  base64?: string; // "data:image/...;base64,..." ili samo čisti base64
 };
 
 type EditableDraft = {
@@ -128,15 +133,20 @@ export default function Page() {
     (async () => {
       try {
         setLoading(true);
-        const table: any = (db as any).activities ?? (db as any).table?.('activities');
+        const table: any =
+          (db as any).activities ?? (db as any).table?.('activities');
         const all: ActivityItem[] = table ? await table.toArray() : [];
-        const sorted = all.slice().sort((a, b) => (a.datum || '').localeCompare(b.datum || ''));
+        const sorted = all
+          .slice()
+          .sort((a, b) => (a.datum || '').localeCompare(b.datum || ''));
         if (alive) setItems(sorted);
       } finally {
         if (alive) setLoading(false);
       }
     })();
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
   }, []);
 
   // Filter
@@ -153,10 +163,12 @@ export default function Page() {
   }, [items, fromDate, toDate]);
 
   const periodLabel = useMemo(() => {
-    if (fromDate && toDate && fromDate === toDate) return `Danas: ${fmtDMY(fromDate)}`;
-    if (fromDate && toDate) return `Period: ${fmtDMY(fromDate)} – ${fmtDMY(toDate)}`;
+    if (fromDate && toDate && fromDate === toDate)
+      return `Danas: ${fmtDMY(fromDate)}`;
+    if (fromDate && toDate)
+      return `Period: ${fmtDMY(fromDate)} – ${fmtDMY(toDate)}`;
     if (fromDate) return `Od: ${fmtDMY(fromDate)}`;
-    if (toDate)   return `Do: ${fmtDMY(toDate)}`;
+    if (toDate) return `Do: ${fmtDMY(toDate)}`;
     return `Danas: ${fmtDMY(toISODateOnly(new Date()))}`;
   }, [fromDate, toDate]);
 
@@ -181,7 +193,9 @@ export default function Page() {
 
     return () => {
       cancelled = true;
-      urlsToRevoke.forEach((u) => u.startsWith('blob:') && URL.revokeObjectURL(u));
+      urlsToRevoke.forEach(
+        (u) => u.startsWith('blob:') && URL.revokeObjectURL(u),
+      );
     };
   }, [filtered]);
 
@@ -191,7 +205,9 @@ export default function Page() {
     modalUrlsRef.current.forEach((u) => URL.revokeObjectURL(u));
     modalUrlsRef.current = [];
 
-    const rawPhotos = Array.isArray((it as any).fotografije) ? (it as any).fotografije : [];
+    const rawPhotos = Array.isArray((it as any).fotografije)
+      ? (it as any).fotografije
+      : [];
     const normalized: AnyPhoto[] = [];
     for (const p of rawPhotos) {
       const n = await normalizePhoto(p);
@@ -239,16 +255,25 @@ export default function Page() {
       newItems.push({
         id: crypto.randomUUID(),
         blob: compressed,
-        url: b64,             // postavi URL na data: odmah, da je trajno vidljiv
+        url: b64, // postavi URL na data: odmah, da je trajno vidljiv
         base64: b64,
         type: compressed.type,
       });
     }
-    setDraft((d) => (d ? { ...d, fotografije: [...(d.fotografije ?? []), ...newItems] } : d));
+    setDraft((d) =>
+      d ? { ...d, fotografije: [...(d.fotografije ?? []), ...newItems] } : d,
+    );
   }
 
   function removePhoto(id: string) {
-    setDraft((d) => (d ? { ...d, fotografije: (d.fotografije ?? []).filter((p) => p.id !== id) } : d));
+    setDraft((d) =>
+      d
+        ? {
+            ...d,
+            fotografije: (d.fotografije ?? []).filter((p) => p.id !== id),
+          }
+        : d,
+    );
   }
 
   function clearPhotos() {
@@ -257,7 +282,9 @@ export default function Page() {
   }
 
   function updateOther(key: string, value: any) {
-    setDraft((d) => (d ? { ...d, other: { ...(d.other ?? {}), [key]: value } } : d));
+    setDraft((d) =>
+      d ? { ...d, other: { ...(d.other ?? {}), [key]: value } } : d,
+    );
   }
 
   // Snimi (merge)
@@ -265,7 +292,8 @@ export default function Page() {
     if (!draft) return;
     try {
       setSaving(true);
-      const table: any = (db as any).activities ?? (db as any).table?.('activities');
+      const table: any =
+        (db as any).activities ?? (db as any).table?.('activities');
       const original: ActivityItem | undefined = await table.get(draft.id);
       if (!original) throw new Error('Stavka nije pronađena.');
 
@@ -274,11 +302,19 @@ export default function Page() {
         id: draft.id,
         datum: draft.datum,
         kupac: draft.kupac,
-        ...(typeof draft.vrstaKontakta !== 'undefined' ? { vrstaKontakta: draft.vrstaKontakta } : {}),
+        ...(typeof draft.vrstaKontakta !== 'undefined'
+          ? { vrstaKontakta: draft.vrstaKontakta }
+          : {}),
         ...(typeof draft.tema !== 'undefined' ? { tema: draft.tema } : {}),
-        ...(typeof draft.napomena !== 'undefined' ? { napomena: draft.napomena } : {}),
-        ...(typeof draft.crmAzuriran !== 'undefined' ? { crmAzuriran: !!draft.crmAzuriran } : {}),
-        ...(draft.fotografije ? { fotografije: draft.fotografije } as any : {}),
+        ...(typeof draft.napomena !== 'undefined'
+          ? { napomena: draft.napomena }
+          : {}),
+        ...(typeof draft.crmAzuriran !== 'undefined'
+          ? { crmAzuriran: !!draft.crmAzuriran }
+          : {}),
+        ...(draft.fotografije
+          ? ({ fotografije: draft.fotografije } as any)
+          : {}),
         ...(draft.other ?? {}),
       };
 
@@ -304,7 +340,8 @@ export default function Page() {
   async function remove(id: string) {
     if (!confirm('Obrisati stavku?')) return;
     try {
-      const table: any = (db as any).activities ?? (db as any).table?.('activities');
+      const table: any =
+        (db as any).activities ?? (db as any).table?.('activities');
       await table.delete(id);
       setItems((prev) => prev.filter((x) => x.id !== id));
     } catch (e) {
@@ -364,56 +401,59 @@ export default function Page() {
             Nema unosa za izabrani period.
           </div>
         )}
-        {!loading && filtered.map((it) => {
-          const phs = (it as any).fotografije as any[] | undefined;
-          const cnt = phs?.length ?? 0;
-          const thumb = thumbs[it.id];
-          return (
-            <div
-              key={it.id}
-              className="bg-white/5 border border-white/10 rounded-2xl p-3 flex items-center justify-between hover:bg-white/8 transition"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                {cnt > 0 ? (
-                  <img
-                    src={thumb}
-                    alt=""
-                    className="w-12 h-12 rounded-xl object-cover border border-white/10 shrink-0"
-                  />
-                ) : (
-                  <div className="w-12 h-12 rounded-xl border border-white/10 bg-white/5 grid place-items-center text-xs text-white/50 shrink-0">
-                    —
+        {!loading &&
+          filtered.map((it) => {
+            const phs = (it as any).fotografije as any[] | undefined;
+            const cnt = phs?.length ?? 0;
+            const thumb = thumbs[it.id];
+            return (
+              <div
+                key={it.id}
+                className="bg-white/5 border border-white/10 rounded-2xl p-3 flex items-center justify-between hover:bg-white/8 transition"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  {cnt > 0 ? (
+                    <img
+                      src={thumb}
+                      alt=""
+                      className="w-12 h-12 rounded-xl object-cover border border-white/10 shrink-0"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-xl border border-white/10 bg-white/5 grid place-items-center text-xs text-white/50 shrink-0">
+                      —
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <div className="text-white font-medium flex items-center gap-2">
+                      {(it as any).kupac || '—'}
+                      {cnt > 0 && (
+                        <span className="text-xs px-2 py-0.5 rounded-full border border-white/15 bg-white/10 text-white/80">
+                          {cnt} sl.
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-white/70 text-sm">
+                      {fmtDMY(toISODateOnly(it.datum))}
+                    </div>
                   </div>
-                )}
-                <div className="min-w-0">
-                  <div className="text-white font-medium flex items-center gap-2">
-                    {(it as any).kupac || '—'}
-                    {cnt > 0 && (
-                      <span className="text-xs px-2 py-0.5 rounded-full border border-white/15 bg-white/10 text-white/80">
-                        {cnt} sl.
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-white/70 text-sm">{fmtDMY(toISODateOnly(it.datum))}</div>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <button
+                    onClick={() => openEdit(it)}
+                    className="px-3 py-1 rounded-xl border border-white/20 bg-white/5 text-white hover:bg-white/10"
+                  >
+                    Uredi
+                  </button>
+                  <button
+                    onClick={() => remove(it.id)}
+                    className="px-3 py-1 rounded-xl border border-white/20 bg-white/5 text-white hover:bg-white/10"
+                  >
+                    Obriši
+                  </button>
                 </div>
               </div>
-              <div className="flex gap-2 shrink-0">
-                <button
-                  onClick={() => openEdit(it)}
-                  className="px-3 py-1 rounded-xl border border-white/20 bg-white/5 text-white hover:bg-white/10"
-                >
-                  Uredi
-                </button>
-                <button
-                  onClick={() => remove(it.id)}
-                  className="px-3 py-1 rounded-xl border border-white/20 bg-white/5 text-white hover:bg-white/10"
-                >
-                  Obriši
-                </button>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
 
       {/* EDIT MODAL */}
@@ -430,7 +470,14 @@ export default function Page() {
                   type="date"
                   value={toISODateOnly(draft.datum)}
                   onChange={(e) =>
-                    setDraft((d) => (d ? { ...d, datum: new Date(e.target.value).toISOString() } : d))
+                    setDraft((d) =>
+                      d
+                        ? {
+                            ...d,
+                            datum: new Date(e.target.value).toISOString(),
+                          }
+                        : d,
+                    )
                   }
                   className="px-3 py-2 rounded-xl border border-white/15 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/30"
                 />
@@ -440,21 +487,35 @@ export default function Page() {
                 <input
                   type="text"
                   value={draft.kupac}
-                  onChange={(e) => setDraft((d) => (d ? { ...d, kupac: e.target.value } : d))}
+                  onChange={(e) =>
+                    setDraft((d) => (d ? { ...d, kupac: e.target.value } : d))
+                  }
                   className="px-3 py-2 rounded-xl border border-white/15 bg-white/10 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/30"
                   placeholder="Naziv kupca"
                 />
               </div>
               <div className="flex flex-col">
-                <label className="text-sm text-white/80 mb-1">Vrsta kontakta</label>
+                <label className="text-sm text-white/80 mb-1">
+                  Vrsta kontakta
+                </label>
                 <select
                   value={draft.vrstaKontakta ?? ''}
-                  onChange={(e) => setDraft((d) => (d ? { ...d, vrstaKontakta: e.target.value } : d))}
+                  onChange={(e) =>
+                    setDraft((d) =>
+                      d ? { ...d, vrstaKontakta: e.target.value } : d,
+                    )
+                  }
                   className="px-3 py-2 rounded-xl border border-white/15 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/30"
                 >
-                  <option value="" disabled>Odaberi...</option>
+                  <option value="" disabled>
+                    Odaberi...
+                  </option>
                   {VRSTE_KONTAKTA.map((opt) => (
-                    <option key={opt.value} value={opt.value} className="bg-neutral-900">
+                    <option
+                      key={opt.value}
+                      value={opt.value}
+                      className="bg-neutral-900"
+                    >
                       {opt.label}
                     </option>
                   ))}
@@ -465,7 +526,9 @@ export default function Page() {
                 <input
                   type="text"
                   value={draft.tema ?? ''}
-                  onChange={(e) => setDraft((d) => (d ? { ...d, tema: e.target.value } : d))}
+                  onChange={(e) =>
+                    setDraft((d) => (d ? { ...d, tema: e.target.value } : d))
+                  }
                   className="px-3 py-2 rounded-xl border border-white/15 bg-white/10 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/30"
                   placeholder="Tema sastanka/kontakta"
                 />
@@ -475,7 +538,11 @@ export default function Page() {
                 <textarea
                   rows={3}
                   value={draft.napomena ?? ''}
-                  onChange={(e) => setDraft((d) => (d ? { ...d, napomena: e.target.value } : d))}
+                  onChange={(e) =>
+                    setDraft((d) =>
+                      d ? { ...d, napomena: e.target.value } : d,
+                    )
+                  }
                   className="px-3 py-2 rounded-xl border border-white/15 bg-white/10 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/30"
                   placeholder="Detalji, dogovoreno, sljedeći koraci…"
                 />
@@ -485,10 +552,16 @@ export default function Page() {
                   id="crm"
                   type="checkbox"
                   checked={!!draft.crmAzuriran}
-                  onChange={(e) => setDraft((d) => (d ? { ...d, crmAzuriran: e.target.checked } : d))}
+                  onChange={(e) =>
+                    setDraft((d) =>
+                      d ? { ...d, crmAzuriran: e.target.checked } : d,
+                    )
+                  }
                   className="h-4 w-4"
                 />
-                <label htmlFor="crm" className="text-sm text-white/90">CRM ažuriran</label>
+                <label htmlFor="crm" className="text-sm text-white/90">
+                  CRM ažuriran
+                </label>
               </div>
             </div>
 
@@ -515,11 +588,15 @@ export default function Page() {
                     if (t === 'number') {
                       return (
                         <div key={key} className="flex flex-col">
-                          <label className="text-sm text-white/80 mb-1">{key}</label>
+                          <label className="text-sm text-white/80 mb-1">
+                            {key}
+                          </label>
                           <input
                             type="number"
                             value={val}
-                            onChange={(e) => updateOther(key, Number(e.target.value))}
+                            onChange={(e) =>
+                              updateOther(key, Number(e.target.value))
+                            }
                             className="px-3 py-2 rounded-xl border border-white/15 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/30"
                           />
                         </div>
@@ -527,7 +604,9 @@ export default function Page() {
                     }
                     return (
                       <div key={key} className="flex flex-col">
-                        <label className="text-sm text-white/80 mb-1">{key}</label>
+                        <label className="text-sm text-white/80 mb-1">
+                          {key}
+                        </label>
                         <textarea
                           rows={4}
                           value={val ?? ''}
@@ -546,7 +625,10 @@ export default function Page() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="text-white/90 font-medium">
-                  Fotografije {(draft.fotografije?.length ?? 0) > 0 ? `(${draft.fotografije?.length})` : ''}
+                  Fotografije{' '}
+                  {(draft.fotografije?.length ?? 0) > 0
+                    ? `(${draft.fotografije?.length})`
+                    : ''}
                 </div>
                 <div className="flex gap-2">
                   <label className="px-3 py-2 rounded-xl border border-white/20 bg-white/5 hover:bg-white/10 cursor-pointer">
@@ -571,7 +653,9 @@ export default function Page() {
               </div>
 
               {(!draft.fotografije || draft.fotografije.length === 0) && (
-                <div className="text-white/60 text-sm">Nema priloženih fotografija.</div>
+                <div className="text-white/60 text-sm">
+                  Nema priloženih fotografija.
+                </div>
               )}
 
               {draft.fotografije && draft.fotografije.length > 0 && (
@@ -604,7 +688,10 @@ export default function Page() {
 
             {/* Actions */}
             <div className="flex gap-2 justify-end">
-              <button onClick={closeEdit} className="px-4 py-2 rounded-xl border border-white/20 bg-white/5 hover:bg-white/10">
+              <button
+                onClick={closeEdit}
+                className="px-4 py-2 rounded-xl border border-white/20 bg-white/5 hover:bg-white/10"
+              >
                 Otkaži
               </button>
               <button

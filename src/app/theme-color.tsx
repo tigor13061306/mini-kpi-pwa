@@ -4,10 +4,15 @@ import { useEffect } from 'react';
 export default function ThemeColor({
   light = '#0b5ed7',
   dark = '#0b5ed7',
-}: { light?: string; dark?: string }) {
+}: {
+  light?: string;
+  dark?: string;
+}) {
   useEffect(() => {
     // osnovni <meta name="theme-color">
-    let base = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    let base = document.querySelector<HTMLMetaElement>(
+      'meta[name="theme-color"]',
+    );
     if (!base) {
       base = document.createElement('meta');
       base.name = 'theme-color';
@@ -17,7 +22,9 @@ export default function ThemeColor({
 
     // varijante za light/dark
     const ensure = (media: string, content: string) => {
-      let el = document.querySelector<HTMLMetaElement>(`meta[name="theme-color"][media="${media}"]`);
+      let el = document.querySelector<HTMLMetaElement>(
+        `meta[name="theme-color"][media="${media}"]`,
+      );
       if (!el) {
         el = document.createElement('meta');
         el.name = 'theme-color';

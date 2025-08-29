@@ -20,7 +20,8 @@ export class MiniKpiDB extends Dexie {
       // Primarni ključ: id
       // Sekundarni indeksi: datum, kupac, vrstaKontakta, createdAt, updatedAt
       // Dodan i složeni indeks [datum+kupac] (može pomoći kod izvještaja po kupcu)
-      activities: 'id, datum, kupac, vrstaKontakta, createdAt, updatedAt, [datum+kupac]'
+      activities:
+        'id, datum, kupac, vrstaKontakta, createdAt, updatedAt, [datum+kupac]',
     });
 
     // (opciono) automatski open — Dexie sam otvara pri prvom pristupu,
@@ -51,7 +52,7 @@ export async function addActivity(a: ActivityItem) {
     id: a.id, // očekuješ da je već postavljen (npr. uuid)
     datum: normalizeDate(a.datum),
     createdAt: a.createdAt || now,
-    updatedAt: now
+    updatedAt: now,
   };
 
   const pk = await db.activities.add(rec);
@@ -64,12 +65,14 @@ export async function updateActivity(id: string, patch: Partial<ActivityItem>) {
   const payload: Partial<ActivityItem> = {
     ...patch,
     ...(patch.datum ? { datum: normalizeDate(patch.datum) } : {}),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   };
 
   const changed = await db.activities.update(id, payload);
   if (changed === 0) {
-    throw new Error(`updateActivity: zapis sa id="${id}" ne postoji ili nije promijenjen.`);
+    throw new Error(
+      `updateActivity: zapis sa id="${id}" ne postoji ili nije promijenjen.`,
+    );
   }
   return changed; // broj promijenjenih zapisa (0 ili 1)
 }
@@ -90,7 +93,10 @@ export async function getActivitiesByPeriod(from: string, to: string) {
   const a = normalizeDate(from);
   const b = normalizeDate(to);
   const [lo, hi] = a <= b ? [a, b] : [b, a];
-  return db.activities.where('datum').between(lo, hi, true, true).sortBy('datum');
+  return db.activities
+    .where('datum')
+    .between(lo, hi, true, true)
+    .sortBy('datum');
 }
 
 /** (opciono) Brisanje svega — pažljivo koristiti */

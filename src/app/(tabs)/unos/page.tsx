@@ -25,21 +25,21 @@ export default function UnosPage() {
     setPickedCount(0);
   }
 
- async function makePhotoItem(file: File): Promise<PhotoItem> {
-  const compressed = await compressImage(file);        // Blob
-  const blobUrl    = await fileToBlobUrl(compressed);  // 'blob:' za UI
-  const data       = await blobToBase64(compressed);   // base64 za export i trajni prikaz
+  async function makePhotoItem(file: File): Promise<PhotoItem> {
+    const compressed = await compressImage(file); // Blob
+    const blobUrl = await fileToBlobUrl(compressed); // 'blob:' za UI
+    const data = await blobToBase64(compressed); // base64 za export i trajni prikaz
 
-  return {
-    id: uuid(),
-    fileName: file.name || 'photo.jpg',
-    data,                 // 1) trajno – Excel i pregled
-    blobUrl,              // 2) trenutno – pregled prije snimanja
-    url: blobUrl,         // 3) legacy kompatibilnost (UI koji čita .url)
-    mimeType: compressed.type,
-    blob: compressed,     // (opciono – ako već čuvaš Blob u IndexedDB)
-  };
-}
+    return {
+      id: uuid(),
+      fileName: file.name || 'photo.jpg',
+      data, // 1) trajno – Excel i pregled
+      blobUrl, // 2) trenutno – pregled prije snimanja
+      url: blobUrl, // 3) legacy kompatibilnost (UI koji čita .url)
+      mimeType: compressed.type,
+      blob: compressed, // (opciono – ako već čuvaš Blob u IndexedDB)
+    };
+  }
 
   async function onSubmit(form: HTMLFormElement) {
     try {
@@ -49,7 +49,8 @@ export default function UnosPage() {
       const fd = new FormData(form);
 
       // Datumski input već vraća "YYYY-MM-DD" — tako i snimamo
-      const datum = (fd.get('datum') as string) || new Date().toISOString().slice(0, 10);
+      const datum =
+        (fd.get('datum') as string) || new Date().toISOString().slice(0, 10);
       const kupac = (fd.get('kupac') as string)?.trim();
       const vrstaKontakta = fd.get('vrstaKontakta') as ContactType;
 
@@ -60,8 +61,10 @@ export default function UnosPage() {
 
       // Skupi sve fajlove iz oba inputa
       const files: File[] = [];
-      if (camInputRef.current?.files) files.push(...Array.from(camInputRef.current.files));
-      if (fileInputRef.current?.files) files.push(...Array.from(fileInputRef.current.files));
+      if (camInputRef.current?.files)
+        files.push(...Array.from(camInputRef.current.files));
+      if (fileInputRef.current?.files)
+        files.push(...Array.from(fileInputRef.current.files));
 
       if (files.length > 10) {
         alert('Maksimalno 10 slika po aktivnosti.');
@@ -105,7 +108,10 @@ export default function UnosPage() {
   return (
     <form
       className="grid gap-3"
-      onSubmit={(e) => { e.preventDefault(); onSubmit(e.currentTarget); }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit(e.currentTarget);
+      }}
     >
       <div className="grid gap-1">
         <label>Datum*</label>
@@ -120,17 +126,30 @@ export default function UnosPage() {
 
       <div className="grid gap-1">
         <label>Kupac*</label>
-        <input name="kupac" required className="bg-neutral-900 rounded px-3 py-2" placeholder="Naziv kupca" />
+        <input
+          name="kupac"
+          required
+          className="bg-neutral-900 rounded px-3 py-2"
+          placeholder="Naziv kupca"
+        />
       </div>
 
       <div className="grid gap-1">
         <label>Lokacija</label>
-        <input name="lokacija" className="bg-neutral-900 rounded px-3 py-2" placeholder="npr. Sarajevo" />
+        <input
+          name="lokacija"
+          className="bg-neutral-900 rounded px-3 py-2"
+          placeholder="npr. Sarajevo"
+        />
       </div>
 
       <div className="grid gap-1">
         <label>Vrsta kontakta*</label>
-        <select name="vrstaKontakta" required className="bg-neutral-900 rounded px-3 py-2">
+        <select
+          name="vrstaKontakta"
+          required
+          className="bg-neutral-900 rounded px-3 py-2"
+        >
           <option value="fizicki">Fizički</option>
           <option value="telefon">Telefonski</option>
           <option value="email">Email</option>
@@ -141,17 +160,30 @@ export default function UnosPage() {
 
       <div className="grid gap-1">
         <label>Tema (kratko)</label>
-        <textarea name="tema" maxLength={500} className="bg-neutral-900 rounded px-3 py-2" rows={2} />
+        <textarea
+          name="tema"
+          maxLength={500}
+          className="bg-neutral-900 rounded px-3 py-2"
+          rows={2}
+        />
       </div>
 
       <div className="grid gap-1">
         <label>Zaključak</label>
-        <textarea name="zakljucak" className="bg-neutral-900 rounded px-3 py-2" rows={2} />
+        <textarea
+          name="zakljucak"
+          className="bg-neutral-900 rounded px-3 py-2"
+          rows={2}
+        />
       </div>
 
       <div className="grid gap-1">
         <label>Sljedeći korak</label>
-        <textarea name="sljedeciKorak" className="bg-neutral-900 rounded px-3 py-2" rows={2} />
+        <textarea
+          name="sljedeciKorak"
+          className="bg-neutral-900 rounded px-3 py-2"
+          rows={2}
+        />
       </div>
 
       <div className="flex items-center gap-2">
@@ -161,7 +193,11 @@ export default function UnosPage() {
 
       <div className="grid gap-1">
         <label>Konkurencija</label>
-        <textarea name="konkurencija" className="bg-neutral-900 rounded px-3 py-2" rows={2} />
+        <textarea
+          name="konkurencija"
+          className="bg-neutral-900 rounded px-3 py-2"
+          rows={2}
+        />
       </div>
 
       {/* FOTO sekcija */}
@@ -206,11 +242,19 @@ export default function UnosPage() {
 
       <div className="grid gap-1">
         <label>Napomena</label>
-        <textarea name="napomena" className="bg-neutral-900 rounded px-3 py-2" rows={2} />
+        <textarea
+          name="napomena"
+          className="bg-neutral-900 rounded px-3 py-2"
+          rows={2}
+        />
       </div>
 
       <div className="flex gap-2">
-        <button disabled={saving} className="bg-sky-600 hover:bg-sky-500 rounded px-4 py-2" type="submit">
+        <button
+          disabled={saving}
+          className="bg-sky-600 hover:bg-sky-500 rounded px-4 py-2"
+          type="submit"
+        >
           {saving ? 'Snima…' : 'Sačuvaj'}
         </button>
         <button
@@ -228,7 +272,9 @@ export default function UnosPage() {
         </button>
       </div>
 
-      <p className="text-xs opacity-70">* obavezna polja: Datum, Kupac, Vrsta kontakta</p>
+      <p className="text-xs opacity-70">
+        * obavezna polja: Datum, Kupac, Vrsta kontakta
+      </p>
     </form>
   );
 }

@@ -1,9 +1,9 @@
 'use client';
 
-import { useMemo, useState } from "react";
-import { db } from "@/lib/db";
-import { exportActivitiesToExcel } from "@/lib/excel";
-import type { ActivityItem } from "@/lib/types";
+import { useMemo, useState } from 'react';
+import { db } from '@/lib/db';
+import { exportActivitiesToExcel } from '@/lib/excel';
+import type { ActivityItem } from '@/lib/types';
 
 export default function IzvjestajPage() {
   const today = new Date().toISOString().slice(0, 10);
@@ -19,14 +19,20 @@ export default function IzvjestajPage() {
   async function fetchByDay(d: string): Promise<ActivityItem[]> {
     const lo = d;
     const hi = d + '\uffff';
-    return db.activities.where('datum').between(lo, hi, true, true).sortBy('datum');
+    return db.activities
+      .where('datum')
+      .between(lo, hi, true, true)
+      .sortBy('datum');
   }
 
   async function fetchByPeriod(a: string, b: string): Promise<ActivityItem[]> {
     const [fromD, toD] = a <= b ? [a, b] : [b, a];
     const lo = fromD;
     const hi = toD + '\uffff'; // uključi cijeli dan "toD"
-    return db.activities.where('datum').between(lo, hi, true, true).sortBy('datum');
+    return db.activities
+      .where('datum')
+      .between(lo, hi, true, true)
+      .sortBy('datum');
   }
 
   const periodLabel = useMemo(() => {
@@ -42,7 +48,7 @@ export default function IzvjestajPage() {
     }
     if (mode === 'period') {
       if (!from) return alert('Unesi datum "Od".');
-      if (!to)   return alert('Unesi datum "Do".');
+      if (!to) return alert('Unesi datum "Do".');
     }
 
     setBusy(true);
@@ -63,7 +69,7 @@ export default function IzvjestajPage() {
 
       await exportActivitiesToExcel(
         rows,
-        mode === 'day' ? { kind: 'day', day } : { kind: 'period', from, to }
+        mode === 'day' ? { kind: 'day', day } : { kind: 'period', from, to },
       );
     } catch (err) {
       console.error(err);
@@ -142,12 +148,15 @@ export default function IzvjestajPage() {
           {busy ? 'Pripremam Excel…' : 'Napravi Excel (.xlsx)'}
         </button>
         <span className="text-sm opacity-80">
-          {count === null ? `Odabir: ${periodLabel}` : `Zapisa: ${count} — ${periodLabel}`}
+          {count === null
+            ? `Odabir: ${periodLabel}`
+            : `Zapisa: ${count} — ${periodLabel}`}
         </span>
       </div>
 
       <p className="text-xs opacity-70">
-        Excel fajl sadrži sve kolone + <b>ugrađene fotografije</b> (ne linkove). Naziv se generiše automatski.
+        Excel fajl sadrži sve kolone + <b>ugrađene fotografije</b> (ne linkove).
+        Naziv se generiše automatski.
       </p>
     </div>
   );

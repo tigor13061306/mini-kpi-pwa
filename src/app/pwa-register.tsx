@@ -34,9 +34,11 @@ export default function PWARegister() {
   if (!updated) return null;
 
   return (
-    <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50
+    <div
+      className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50
                     bg-white/10 backdrop-blur border border-white/20
-                    text-white px-3 py-2 rounded-xl flex gap-2 items-center">
+                    text-white px-3 py-2 rounded-xl flex gap-2 items-center"
+    >
       <span>Aplikacija je ažurirana.</span>
       <button
         className="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-500"

@@ -32,7 +32,7 @@ export async function fileToBlobUrl(input: File | Blob): Promise<string> {
  */
 export async function compressImage(
   input: File | Blob,
-  options: { maxDim?: number; quality?: number } = {}
+  options: { maxDim?: number; quality?: number } = {},
 ): Promise<Blob> {
   const { maxDim = 1600, quality = 0.8 } = options;
 
@@ -49,7 +49,10 @@ export async function compressImage(
     const isPng = mime.includes('png');
 
     // Bez skaliranja i već dobar tip => nema recompress
-    if (scale === 1 && (mime.includes('jpeg') || mime.includes('jpg') || mime.includes('png'))) {
+    if (
+      scale === 1 &&
+      (mime.includes('jpeg') || mime.includes('jpg') || mime.includes('png'))
+    ) {
       return srcBlob;
     }
 
@@ -65,9 +68,9 @@ export async function compressImage(
 
     const outBlob: Blob = await new Promise((resolve, reject) => {
       canvas.toBlob(
-        b => (b ? resolve(b) : reject(new Error('toBlob failed'))),
+        (b) => (b ? resolve(b) : reject(new Error('toBlob failed'))),
         outMime,
-        isPng ? undefined : quality
+        isPng ? undefined : quality,
       );
     });
 

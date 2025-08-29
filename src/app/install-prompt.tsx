@@ -10,7 +10,8 @@ export default function InstallPrompt() {
   useEffect(() => {
     // Ako je već instalirano (standalone), ne nudimo ništa
     const isStandalone =
-      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+      (window.matchMedia &&
+        window.matchMedia('(display-mode: standalone)').matches) ||
       // iOS posebni flag
       (navigator as any).standalone === true;
 
@@ -22,7 +23,9 @@ export default function InstallPrompt() {
     // iOS detekcija (bez MSStream): UA + iPadOS (MacIntel + touch)
     const ua = navigator.userAgent || '';
     const isIOSUA = /iPad|iPhone|iPod/.test(ua);
-    const isIPadOS = navigator.platform === 'MacIntel' && (navigator as any).maxTouchPoints > 1;
+    const isIPadOS =
+      navigator.platform === 'MacIntel' &&
+      (navigator as any).maxTouchPoints > 1;
     const isIOS = isIOSUA || isIPadOS;
 
     if (isIOS) {
@@ -62,7 +65,9 @@ export default function InstallPrompt() {
         type="button"
         className="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm"
         onClick={() =>
-          alert('Na iPhone/iPad instalacija ide iz Safari-ja: Share → Add to Home Screen.')
+          alert(
+            'Na iPhone/iPad instalacija ide iz Safari-ja: Share → Add to Home Screen.',
+          )
         }
       >
         Dodaj na početni ekran
@@ -76,7 +81,9 @@ export default function InstallPrompt() {
         type="button"
         className="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm"
         onClick={() =>
-          alert('U Chrome/Edge otvori meni (⋮) → Install app / Add to Home screen.')
+          alert(
+            'U Chrome/Edge otvori meni (⋮) → Install app / Add to Home screen.',
+          )
         }
       >
         Instaliraj (upute)

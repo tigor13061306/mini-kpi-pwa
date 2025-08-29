@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint --config .eslintrc.json . --ext .js,.jsx,.ts,.tsx",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "browser-image-compression": "^2.0.2",
@@ -24,6 +26,10 @@
     "next-pwa": "^5.6.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.12",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "eslint": "^9.32.0",
+    "eslint-config-next": "^14.2.3",
+    "prettier": "^3.6.2",
+    "eslint-config-prettier": "^9.1.0"
   }
 }

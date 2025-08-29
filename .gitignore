@@ -14,3 +14,5 @@ out/
 public/sw.js
 public/workbox-*.js
 public/worker-*.js
+
+cloudflared.exe

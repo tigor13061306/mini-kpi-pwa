@@ -6,7 +6,7 @@
         "src/*"
       ]
     },
-    "strict": false,
+    "strict": true,
     "jsx": "preserve",
     "esModuleInterop": true,
     "module": "esnext",

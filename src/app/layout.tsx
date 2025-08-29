@@ -4,6 +4,8 @@ import type { Metadata } from 'next';
 import ThemeColor from './theme-color';
 import InstallPrompt from './install-prompt';
 import SWRegister from './sw-register';
+import Script from 'next/script';
+
 
 
 // ⬅️ OVO MORA POSTOJATI:
@@ -44,7 +46,25 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <main className="mx-auto max-w-3xl p-4">{children}</main>
 
         <SWRegister /> {/* ⬅️ ručna registracija SW */}
-        
+        <Script id="sw-register" strategy="afterInteractive">
+{`
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.getRegistration().then((reg) => {
+        if (!reg) {
+          navigator.serviceWorker
+            .register('/sw.js', { scope: '/' })
+            .then(r => console.log('[SW] registered:', r.scope))
+            .catch(err => console.warn('[SW] registration failed:', err));
+        } else {
+          console.log('[SW] already registered:', reg.scope);
+        }
+      });
+    });
+  }
+`}
+</Script>
+
       </body>
     </html>
   );

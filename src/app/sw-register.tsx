@@ -8,15 +8,12 @@ export default function SWRegister() {
 
     const register = async () => {
       try {
-        // registruj root scope
-        const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
-        // console.log('SW registered:', reg);
+        await navigator.serviceWorker.register('/sw.js', { scope: '/' });
       } catch (e) {
         console.warn('SW registration failed:', e);
       }
     };
 
-    // pri potpunom učitavanju izbjegavamo race uslove
     if (document.readyState === 'complete') register();
     else window.addEventListener('load', register);
 

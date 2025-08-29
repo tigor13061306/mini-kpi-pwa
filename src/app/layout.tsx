@@ -3,6 +3,8 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import ThemeColor from './theme-color';
 import InstallPrompt from './install-prompt';
+import SWRegister from './sw-register';
+
 
 // ⬅️ OVO MORA POSTOJATI:
 import './globals.css';
@@ -42,6 +44,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <main className="mx-auto max-w-3xl p-4">{children}</main>
 
         <SWRegister /> {/* ⬅️ ručna registracija SW */}
+        
       </body>
     </html>
   );
